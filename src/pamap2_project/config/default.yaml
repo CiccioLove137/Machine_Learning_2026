@@ -1,0 +1,143 @@
+# =========================
+# CONFIGURAZIONE PAMAP2
+# =========================
+
+seed: 42
+
+# =========================
+# DATASET
+# =========================
+dataset:
+  raw_protocol_dir: data/raw/Protocol
+
+  exclude_subjects:
+    - subject109
+
+  activities:
+    - 1    # lying
+    - 2    # sitting
+    - 3    # standing
+    - 4    # walking
+    - 5    # running
+    - 6    # cycling
+    - 7    # Nordic walking
+    - 12   # ascending stairs
+    - 13   # descending stairs
+    - 16   # vacuum cleaning
+    - 17   # ironing
+
+  exclude_activities:
+    - 0
+    - 24
+
+  sample_rate: 100
+
+  # HR: lo teniamo e lo riempiamo con ffill + bfill
+  use_hr: true
+  hr_fill_strategy: simple   # simple = ffill + bfill
+
+  # Rimuoviamo quaternion/orientamento
+  remove_orientation: true
+
+
+# =========================
+# WINDOWING
+# =========================
+windowing:
+  window_sec: 5
+  overlap: 0.5
+  purity_threshold: 0.7
+
+
+# =========================
+# SPLIT
+# =========================
+split:
+  # subject103 solo training (classi mancanti)
+  train_only_subjects:
+    - subject103
+
+  # split manuale
+  train_subjects:
+    - subject101
+    - subject102
+    - subject104
+    - subject106
+
+  val_subjects:
+    - subject105
+
+  test_subjects:
+    - subject107
+    - subject108
+
+
+# =========================
+# MODELLO RNN (GRU / LSTM)
+# =========================
+model:
+  name: gru              # gru | lstm
+  hidden_dim: 128
+  num_layers: 2
+  bidirectional: true
+  dropout: 0.3
+
+
+# =========================
+# TRAINING
+# =========================
+training:
+  epochs: 25
+  batch_size: 64
+  lr: 0.001
+  optimizer: adam
+  weight_decay: 0.0001
+
+  device: cuda
+  evaluation_metric: f1
+  best_metric_lower_is_better: false
+
+  # EARLY STOPPING
+  early_stopping:
+    enabled: true
+    monitor: f1
+    mode: max
+    patience: 10
+    min_delta: 0.0
+
+  # LR SCHEDULER
+  scheduler:
+    enabled: true
+    name: reduce_on_plateau
+    monitor: f1
+    mode: max
+    factor: 0.5
+    patience: 2
+    min_lr: 0.00001
+
+
+# =========================
+# SVM BASELINE
+# =========================
+svm:
+  # Come trasformiamo la finestra (T,F)
+  feature_mode: stats     # stats | flatten
+
+  # solo se feature_mode = stats
+  stats:
+    - mean
+    - std
+    - min
+    - max
+
+  # pipeline
+  use_scaler: true
+
+  # modello
+  kernel: rbf
+  C: 1.0
+  gamma: scale
+  class_weight: balanced
+
+  evaluation_metric: f1
+  best_metric_lower_is_better: false
