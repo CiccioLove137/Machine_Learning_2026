@@ -11,7 +11,7 @@ from src.pamap2_project.utils.run_manager import (
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="PAMAP2 Project (style prof + runs)")
+    parser = argparse.ArgumentParser(description="PAMAP2 Project")
 
     parser.add_argument(
         "--config",
