@@ -76,10 +76,10 @@ split:
 # MODELLO RNN (GRU / LSTM)
 # =========================
 model:
-  name: gru              # gru | lstm
+  name: lstm              # gru | lstm
   hidden_dim: 128
   num_layers: 2
-  bidirectional: true
+  bidirectional: false
   dropout: 0.3
 
 
